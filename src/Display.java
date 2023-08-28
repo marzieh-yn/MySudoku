@@ -6,12 +6,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Display extends JPanel implements ActionListener {
-    private int displayWidth = 557;
-    private int displayHeight = 580;
-    private int buttonWidth = 200;
-    private final Color whiteBackGround = new Color(0xf5, 0xf5, 0xf5);
+    static int displayWidth = 557;
+    static int displayHeight = 580;
+    static int buttonWidth = 200;
     private final Color blackColorNumber = new Color(5, 5, 9);
     private final Color wrongEmptyNumber = new Color(143, 53, 143);
+    private static final Color whiteBackGround = new Color(0xf5, 0xf5, 0xf5);
 
     public Display(){
 
@@ -19,11 +19,11 @@ public class Display extends JPanel implements ActionListener {
         {
             public void mousePressed(MouseEvent e)
             {
-                selectNumber(e.getX(),e.getY());   //the called method on mouse click
+                SetNumbers.setNumber(e.getX(),e.getY());   //the called method on mouse click
+                repaint(buttonWidth,0, displayWidth, displayHeight);
             }//end of mouse select
         });//end of mouse listener
         this.setLayout(new BorderLayout());
-
 
         JPanel panelButton = new JPanel();
         panelButton.setPreferredSize(new Dimension(buttonWidth,displayHeight));
@@ -36,7 +36,6 @@ public class Display extends JPanel implements ActionListener {
 
         SButton SolvedSudoku = new SButton("Solve Sudoku",
                 "SolvedSudoku");
-        SolvedSudoku.addActionListener(this);
         panelButton.add(SolvedSudoku);
 
         SButton UndoButton = new SButton("Undo",
@@ -60,56 +59,12 @@ public class Display extends JPanel implements ActionListener {
 
         SButton CS = new SButton(" Custom Sudoku", "CS");
         CS.addActionListener(this);
-//        panelButton.add(CS);
+        //        panelButton.add(CS);
 
         this.add(panelButton,BorderLayout.WEST);
-
     }
 
-    private void selectNumber(int x, int y){
-        int NumberPosition[] = {3,63,124,187,248,309,372,433,494};
-        final byte pSNumberY = 19;
-        if( x < buttonWidth + NumberPosition[0])
-            return;
-        x -= buttonWidth - NumberPosition[0];
 
-        byte count;
-        byte Xposition = 0;
-        for(count = 0; count < 9; count++)
-        {
-            if(x > NumberPosition[count])
-                Xposition = count;
-        }
-
-        byte Yposition = 0;
-        for(count = 0; count < 9; count++)
-        {
-            if(y > NumberPosition[count])
-                Yposition = count;
-        }
-        byte position = (byte) (Xposition + Yposition*9);
-
-        byte Xnumber = 0; //the number in x position 123 or 456 or 789
-        x -=  NumberPosition[Xposition];
-        for(count = 0; count < 3; count++)
-        {
-            if(x >  pSNumberY*count)
-                Xnumber = count;
-        }
-
-        byte Ynumber = 0;
-        y -=  NumberPosition[Yposition];
-        for(count = 0; count < 3; count++)
-        {
-            if(y >  pSNumberY*count)
-                Ynumber = count;
-        }
-        byte number = (byte) (Xnumber + Ynumber*3);
-
-        MySudoku.step = SMethods.select(MySudoku.sudoku, number, position, MySudoku.step);
-        repaint(buttonWidth,0, displayWidth, displayHeight);
-
-    }
 
     public Dimension getPreferredSize()
     {
@@ -131,12 +86,12 @@ public class Display extends JPanel implements ActionListener {
         final int FootNumberX = 211;
         final int FootNumberY = 574;
         //Grid lines for the display
-        int BigLines[] = {0, 184, 369, 554, 577};
-        int SmallLines[] = {62, 123, 247, 308, 432, 493};
-        int NumberPosition[] = {3,63,124,187,248,309,372,433,494};
-        Font fontSelected = new Font("Serif", Font.CENTER_BASELINE, 50);
-        Font fontFoot = new Font("Serif", Font.ROMAN_BASELINE, 20);
-        Font fontPencil = new Font("Serif", Font.ROMAN_BASELINE, 20);
+        int[] BigLines = {0, 184, 369, 554, 577};
+        int[] SmallLines = {62, 123, 247, 308, 432, 493};
+        int[] NumberPosition = {3,63,124,187,248,309,372,433,494};
+        Font fontSelected = new Font("Serif", Font.BOLD, 50);
+        Font fontFoot = new Font("Serif", Font.PLAIN, 20);
+        Font fontPencil = new Font("Serif", Font.PLAIN, 20);
 
         super.paintComponent(g);
         g.setColor(blackColorNumber);
@@ -199,28 +154,28 @@ public class Display extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e)
     {
-        if(e.getActionCommand() == "CS")
+        if(e.getActionCommand().equals("CS"))
             MySudoku.step = 0;
-        else if(e.getActionCommand() == "Hard")
+        else if(e.getActionCommand().equals("Hard"))
         {
             SMethods.doSudoku(MySudoku.sudoku, (byte) 0);
             MySudoku.step = 25;
         }
-        else if(e.getActionCommand() == "Medium")
+        else if(e.getActionCommand().equals("Medium"))
         {
             SMethods.doSudoku(MySudoku.sudoku, (byte) 0);
             MySudoku.step = 35;
         }
-        else if(e.getActionCommand() == "Easy")
+        else if(e.getActionCommand().equals("Easy"))
         {
             SMethods.doSudoku(MySudoku.sudoku, (byte) 0);
             MySudoku.step = 45;
         }
-        else if(e.getActionCommand() == "SolvedSudoku")
+        else if(e.getActionCommand().equals("SolvedSudoku"))
         {
             SMethods.doSudoku(MySudoku.sudoku, MySudoku.step);
         }
-        else if(e.getActionCommand() == "Undo")
+        else if(e.getActionCommand().equals("Undo"))
         {
             if(MySudoku.step > 0)
                 MySudoku.step -= 1;
